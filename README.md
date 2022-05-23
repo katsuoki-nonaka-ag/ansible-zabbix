@@ -1,7 +1,7 @@
 # Ubuntu20.04 zabbixサーバインストール
 
 ## ansibleインストール
-`sudo apt install ansible
+`sudo apt install ansible`
 
 ## ファイルのバックアップ
 ```
@@ -20,6 +20,6 @@ sudo cp -p hosts bk/hosts
 ## ファイルのコピー
 `sudo cp -p ./ansible-zabbix/* /etc/ansible`
 
-## ansible実行
+## playbook実行
 `ansible-playbook zabbix-install.yml`
 
