@@ -11,11 +11,17 @@ sudo cp -p ansible.cfg bk/ansible.cfg.org
 sudo cp -p hosts bk/hosts
 ```
 
-## ホームディレクトリへ移動
-`cd ~`
+##gitの設定
+```
+git config --global user.name [ここにgithubのユーザ名を入力]
+git config --global user.email [ここにgithubのメールアドレスを入力]
+```
 
 ## git clone
-`git clone https://github.com/katsuoki-nonaka-ag/ansible-zabbix.git`
+```
+cd ~
+git clone https://github.com/katsuoki-nonaka-ag/ansible-zabbix.git
+```
 
 ## ファイルのコピー
 `sudo cp -p ./ansible-zabbix/* /etc/ansible`
