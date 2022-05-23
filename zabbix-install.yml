@@ -43,7 +43,37 @@
       postgresql_user:
         db: zabbix
         name: zabbix
-        password: devdev123
+        password: hogehoge
 
     - name: configure db
       shell: zcat /usr/share/doc/zabbix-server-pgsql*/create.sql.gz | sudo -u zabbix psql zabbix
+
+    - name: get server conf backup
+      shell: cp /etc/zabbix/zabbix_server.conf /etc/zabbix/zabbix_server.conf_org
+
+    - name: get apache backup
+      shell: cp /etc/zabbix/apache.conf /etc/zabbix/apache.conf_org
+
+    - name: copy server conf
+      shell: cp -p /etc/ansible/zabbix_server.conf /etc/zabbix/zabbix_server.conf
+
+    - name: copy apache conf
+      shell: cp -p /etc/ansible/apache.conf /etc/zabbix/apache.conf
+
+    - name: restart zabbix server
+      service: 
+        name: zabbix-server
+        state: restarted
+        enabled: yes
+
+    - name: restart zabbix agent
+      service:
+        name: zabbix-agent
+        state: restarted
+        enabled: yes
+
+    - name:
+      service:
+        name: apache2
+        state: restarted
+        enabled: yes

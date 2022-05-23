@@ -34,7 +34,7 @@ sudo vi /etc/zabbix/zabbix_server.conf
 
 ```
 #DBPassword=password   //コメントアウトを外し
-DBPassword=好きなパスワードを設定
+DBPassword=zabbix
 ```
 
 ## timezoneを変更
