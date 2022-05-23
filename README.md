@@ -1,10 +1,7 @@
 # Ubuntu20.04 zabbixサーバインストール
 
 ## ansibleインストール
-`sudo apt install ansible`
-
-## git インストール
-`sudo apt git install`
+`sudo apt install ansible
 
 ## ファイルのバックアップ
 ```
@@ -26,32 +23,3 @@ sudo cp -p hosts bk/hosts
 ## ansible実行
 `ansible-playbook zabbix-install.yml`
 
-## zabbix_server.confを編集
-```
-sudo cp /etc/zabbix/zabbix_server.conf /etc/zabbix/zabbix_server.conf_org
-sudo vi /etc/zabbix/zabbix_server.conf
-```
-
-```
-#DBPassword=password   //コメントアウトを外し
-DBPassword=zabbix
-```
-
-## timezoneを変更
-```
-cp /etc/zabbix/apache.conf /etc/zabbix/apache.conf_org
-vi /etc/zabbix/apache.conf
-```
-
-```
-【変更前】
-# php_value date.timezone Europe/Riga
-【変更後】
-php_value date.timezone Asia/Tokyo
-```
-
-## デーモンをリスタート
-```
-systemctl restart zabbix-server zabbix-agent apache2
-systemctl enable zabbix-server zabbix-agent apache2
-```
