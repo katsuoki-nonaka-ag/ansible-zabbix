@@ -10,6 +10,7 @@
           - python-dev
 
     - name: set python3 to default
+      shell: update-alternatives --install /usr/bin/python python /usr/bin/python3.8 0
 
     - name: install psycopg2
       shell: pip install psycopg2-binary
