@@ -1,6 +1,14 @@
 - hosts: all
   become: yes
   tasks:
+    - name: install pip
+      apt:
+        name: python3-pip
+
+    - name: install psycopg2
+      pip:
+        name: python-psycopg2
+
     - name: install zabbix repos
       shell: wget https://repo.zabbix.com/zabbix/6.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_6.0-1+ubuntu20.04_all.deb
 
@@ -19,10 +27,12 @@
           - postgresql
 
     - name: create db
+      become_user: postgres
       postgresql_db:
         name: zabbix
 
-    - name: create user mail
+    - name: create user zabbix
+      become_user: postgres
       postgresql_user:
         db: zabbix
         name: zabbix
