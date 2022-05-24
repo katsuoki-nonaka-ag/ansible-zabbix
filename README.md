@@ -35,7 +35,7 @@ ansibleの説明は後で行いますが、使えるようになると「自動�
 
 <a id="zabbix"></a>
 
-## <a hrf="#zabbix">zabbixとは</a>
+## <a href="#zabbix">zabbixとは</a>
 [zabbixの公式サイト](https://www.zabbix.com/documentation/2.2/jp/manual/introduction/about)では次のように説明されています。
 > Zabbixは多数のネットワークのパラメータおよびサーバの稼働状態と整合性を監視するためのソフトウェアです。
 > Zabbixは柔軟性の高い通知メカニズムを備え、ユーザはあらゆるイベントからメールベースの通知を行うように
