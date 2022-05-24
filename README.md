@@ -6,8 +6,6 @@
 ansibleの説明は後で行いますが、使えるようになると「自動化って便利だなあ」と思えるので試してみるのをオススメします。
 <br>
 
-- [はじめに](#introduction)
-
 - [ansibleとは](#ansible)
 
 - [zabbixとは](#zabbix)
@@ -17,16 +15,10 @@ ansibleの説明は後で行いますが、使えるようになると「自動�
 - [開発環境](#environment)
 
 - [構築](#build)
+  - [概要](#summary)
+  - [手順](#process)
 
-- [おわりに](#end)
-
-## <a id="#introduciton"></a>はじめに
-
-
-
-<br>
-
-## <a id="#ansible"></a>ansibleとは
+## <a id="#ansible">ansibleとは</a>
 [ansibleの公式サイト](https://docs.ansible.com/ansible/2.9_ja/index.html)では次のように説明されています。
 > Ansible は IT 自動化ツールです。 このツールを使用すると、
 > システムの構成、ソフトウェアの展開、
@@ -35,7 +27,7 @@ ansibleの説明は後で行いますが、使えるようになると「自動�
 
 <br>
 
-## <a id="#zabbix"></a>zabbixとは
+## <a id="#zabbix">zabbixとは</a>
 [zabbixの公式サイト](https://www.zabbix.com/documentation/2.2/jp/manual/introduction/about)では次のように説明されています。
 > Zabbixは多数のネットワークのパラメータおよびサーバの稼働状態と整合性を監視するためのソフトウェアです。
 > Zabbixは柔軟性の高い通知メカニズムを備え、ユーザはあらゆるイベントからメールベースの通知を行うように
@@ -44,13 +36,13 @@ ansibleの説明は後で行いますが、使えるようになると「自動�
 
 <br>
 
-## <a id="#prerequisite"></a>前提条件
+## <a id="#prerequisite">前提条件</a>
 - [virtualbox](https://www.virtualbox.org/wiki/Downloads)インストール済み
-- 仮想環境上で[Ubuntu desktop 20.04](https://www.ubuntulinux.jp/News/ubuntu2004-ja-remix)インストール済み
+- 仮想環境上で[Ubuntu desktop 20.04](http://cdimage.ubuntulinux.jp/releases/20.04.1/)インストール済み
 
 <br>
 
-## <a id="#environment"></a>開発環境
+## <a id="#environment">開発環境</a>
 - (ホストOS) windows 10
 - (ゲストOS) Ubuntu desktop 20.04.4
 - virtualbox 6.1
@@ -59,17 +51,17 @@ ansibleの説明は後で行いますが、使えるようになると「自動�
 
 <br>
 
-## <a id="#build"></a>構築
+## <a id="#build">構築</a>
 
-### 概要
+### <a id="#summary">概要</a>
 ゲストOS上でansibleのplaybookを実行し、zabbixサーバーを構築
 
-### 手順
+### <a id="#process">手順</a>
 1. ansibleをインストール
 
 ```
 sudo -s
-sudo apt install ansible
+apt install -y ansible
 ```
 
 2. バックアップ取得
@@ -139,7 +131,9 @@ cp -p hosts bk/hosts
 
 3. playbook実行
 
-`ansible-playbook zabbix-install.yml`
+```
+ansible-playbook zabbix-install.yml
+```
 
 4. zabbixサーバーの設定ファイルを編集し、設定を追加
 
@@ -152,7 +146,9 @@ vi /etc/zabbix/zabbix_server.conf
 
 #### 設定ファイルに追加
 
-`DBPassword=[パスワードを入力]`
+```
+DBPassword=[パスワードを入力]`
+```
 
 5. apacheの設定ファイルを編集
 
@@ -164,7 +160,9 @@ vi /etc/zabbix/apache.conf
 ```
 #### 設定ファイルに追加
 
-`php_value date.timezone Asia/Tokyo`
+```
+php_value date.timezone Asia/Tokyo`
+```
 
 6. デーモンを起動し、有効化
 
@@ -177,6 +175,5 @@ systemctl enable zabbix-server zabbix-agent apache2
 
 ゲストOS上でfirefoxを起動し、localhost/zabbixにアクセスし、WEB-UIが表示されることを確認する。
 
-## <a id="#end"></a>さいごに
 
 
