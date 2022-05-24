@@ -148,7 +148,6 @@ cp -p hosts bk/hosts
       shell: zcat /usr/share/doc/zabbix-server-pgsql*/create.sql.gz | sudo -u zabbix psql zabbix
 ```
 
-
 3. playbook実行
 
 ```
