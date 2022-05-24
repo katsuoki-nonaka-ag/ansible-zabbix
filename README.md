@@ -21,6 +21,7 @@ ansibleの説明は後で行いますが、使えるようになると「自動�
 
 
 <a id="ansible"></a>
+
 ## <a href="#ansible">ansibleとは</a>
 [ansibleの公式サイト](https://docs.ansible.com/ansible/2.9_ja/index.html)では次のように説明されています。
 > Ansible は IT 自動化ツールです。 このツールを使用すると、
@@ -33,6 +34,7 @@ ansibleの説明は後で行いますが、使えるようになると「自動�
 <br>
 
 <a id="zabbix"></a>
+
 ## <a hrf="#zabbix">zabbixとは</a>
 [zabbixの公式サイト](https://www.zabbix.com/documentation/2.2/jp/manual/introduction/about)では次のように説明されています。
 > Zabbixは多数のネットワークのパラメータおよびサーバの稼働状態と整合性を監視するためのソフトウェアです。
