@@ -4,6 +4,7 @@
 <br>
 今回はansibleという自動化ツールによるzabbixサーバーの構築について書いていきます。
 ansibleの説明は後で行いますが、使えるようになると「自動化って便利だなあ」と思えるので試してみるのをオススメします。
+
 <br>
 
 - [ansibleとは](#ansible)
@@ -27,6 +28,8 @@ ansibleの説明は後で行いますが、使えるようになると「自動�
 > より高度なITタスク (継続的なデプロイメントやダウンタイムなしのローリング更新など) 
 > のオーケストレーションが可能になります。
 
+この説明によるとansibleはサーバーやルーターの構築・管理・設定等を自動化することが可能です。
+
 <br>
 
 <a id="zabbix"></a>
@@ -37,16 +40,19 @@ ansibleの説明は後で行いますが、使えるようになると「自動�
 > 設定することができます。これらの機能によりサーバの障害に迅速に対応することができます。
 > Zabbixは保存されたデータをもとにすぐれたレポートやデータのグラフィカル表示機能を提供します。
 
+この説明によるとzabbixはサーバーを監視し、グラフ化や通知を行うことが可能です。
+
 <br>
 
-<a id="#prerequisite"></a>
+<a id="prerequisite"></a>
+
 ## <a href="#prerequisite">前提条件</a>
 - [virtualbox](https://www.virtualbox.org/wiki/Downloads)インストール済み
 - 仮想環境上で[Ubuntu desktop 20.04](http://cdimage.ubuntulinux.jp/releases/20.04.1/)インストール済み
 
 <br>
 
-## <a id="#environment"></a>
+## <a id="environment"></a>
 ## <a href="#environment">開発環境</a>
 - (ホストOS) windows 10
 - (ゲストOS) Ubuntu desktop 20.04.4
@@ -56,14 +62,17 @@ ansibleの説明は後で行いますが、使えるようになると「自動�
 
 <br>
 
-<a id="#build"></a>
+<a id="build"></a>
+
 ## <a href="#build">構築</a>
 
-<a id="#summary"></a>
+<a id="summary"></a>
+
 ### <a href="#summary">概要</a>
 ゲストOS上でansibleのplaybookを実行し、zabbixサーバーを構築
 
-<a id="#process"></a>
+<a id="process"></a>
+
 ### <a href="#process">手順</a>
 1. ansibleをインストール
 
