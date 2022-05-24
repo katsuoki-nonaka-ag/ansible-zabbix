@@ -54,7 +54,8 @@ ansibleの説明は後で行いますが、使えるようになると「自動�
 
 <br>
 
-## <a id="environment"></a>
+<a id="environment"></a>
+
 ## <a href="#environment">開発環境</a>
 - (ホストOS) windows 10
 - (ゲストOS) Ubuntu desktop 20.04.4
