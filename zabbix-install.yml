@@ -25,7 +25,6 @@
     - name: install package  
       apt:
         name:
-          - ssh
           - zabbix-server-pgsql
           - zabbix-frontend-php
           - php7.4-pgsql

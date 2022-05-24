@@ -1,31 +1,182 @@
-# Ubuntu20.04 zabbixサーバインストール
+# ansibleによるzabbixサーバー構築の自動化に挑戦
 
-## ansibleインストール
-`sudo apt install ansible`
+初めまして、AGESTでエンジニアをしているのなかです。
+<br>
+今回はansibleという自動化ツールによるzabbixサーバーの構築について書いていきます。
+ansibleの説明は後で行いますが、使えるようになると「自動化って便利だなあ」と思えるので試してみるのをオススメします。
+<br>
 
-## ファイルのバックアップ
+- [はじめに](#introduction)
+
+- [ansibleとは](#ansible)
+
+- [zabbixとは](#zabbix)
+
+- [前提条件](#prerequisite)
+
+- [開発環境](#environment)
+
+- [構築](#build)
+
+- [おわりに](#end)
+
+## <a id="#introduciton"></a>はじめに
+
+
+
+<br>
+
+## <a id="#ansible"></a>ansibleとは
+[ansibleの公式サイト](https://docs.ansible.com/ansible/2.9_ja/index.html)では次のように説明されています。
+> Ansible は IT 自動化ツールです。 このツールを使用すると、
+> システムの構成、ソフトウェアの展開、
+> より高度なITタスク (継続的なデプロイメントやダウンタイムなしのローリング更新など) 
+> のオーケストレーションが可能になります。
+
+<br>
+
+## <a id="#zabbix"></a>zabbixとは
+[zabbixの公式サイト](https://www.zabbix.com/documentation/2.2/jp/manual/introduction/about)では次のように説明されています。
+> Zabbixは多数のネットワークのパラメータおよびサーバの稼働状態と整合性を監視するためのソフトウェアです。
+> Zabbixは柔軟性の高い通知メカニズムを備え、ユーザはあらゆるイベントからメールベースの通知を行うように
+> 設定することができます。これらの機能によりサーバの障害に迅速に対応することができます。
+> Zabbixは保存されたデータをもとにすぐれたレポートやデータのグラフィカル表示機能を提供します。
+
+<br>
+
+## <a id="#prerequisite"></a>前提条件
+- [virtualbox](https://www.virtualbox.org/wiki/Downloads)インストール済み
+- 仮想環境上で[Ubuntu desktop 20.04](https://www.ubuntulinux.jp/News/ubuntu2004-ja-remix)インストール済み
+
+<br>
+
+## <a id="#environment"></a>開発環境
+- (ホストOS) windows 10
+- (ゲストOS) Ubuntu desktop 20.04.4
+- virtualbox 6.1
+- zabbix 6.0
+- postgresql
+
+<br>
+
+## <a id="#build"></a>構築
+
+### 概要
+ゲストOS上でansibleのplaybookを実行し、zabbixサーバーを構築
+
+### 手順
+1. ansibleをインストール
+
 ```
-cd /etc/ansible
+sudo -s
+sudo apt install ansible
+```
+
+2. バックアップ取得
+
+```
+cd /etc/ansilbe
 mkdir bk
-sudo cp -p ansible.cfg bk/ansible.cfg.org
-sudo cp -p hosts bk/hosts
+cp -p ansible.cfg bk/ansible.cfg.org
+cp -p hosts bk/hosts
 ```
 
-##gitの設定
+3. playbook作成
+
+`vi zabbix-install.yml`でplaybookを作成し、以下のように編集
+
 ```
-git config --global user.name [ここにgithubのユーザ名を入力]
-git config --global user.email [ここにgithubのメールアドレスを入力]
+- hosts: all
+  become: yes
+  tasks:
+    - name: install pip
+      apt:
+        name:
+          - python3
+          - python3-pip
+
+    - name: set python3 to default
+      shell: update-alternatives --install /usr/bin/python python /usr/bin/python3.8 0
+
+    - name: install psycopg2
+      shell: pip install psycopg2-binary
+
+    - name: install zabbix repos
+      shell: wget https://repo.zabbix.com/zabbix/6.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_6.0-1+ubuntu20.04_all.deb
+
+    - name: dpkg
+      shell: dpkg -i zabbix-release_6.0-1+ubuntu20.04_all.deb
+
+    - name: apt update
+      shell: apt update
+
+    - name: install package  
+      apt:
+        name:
+          - zabbix-server-pgsql
+          - zabbix-frontend-php
+          - php7.4-pgsql
+          - zabbix-apache-conf
+          - zabbix-agent
+          - postgresql
+
+    - name: create db
+      become_user: postgres
+      postgresql_db:
+        name: zabbix
+
+    - name: create user zabbix
+      become_user: postgres
+      postgresql_user:
+        db: zabbix
+        name: zabbix
+        password: [パスワードを入力]
+
+    - name: configure db
+      shell: zcat /usr/share/doc/zabbix-server-pgsql*/create.sql.gz | sudo -u zabbix psql zabbix
 ```
 
-## git clone
-```
-cd ~
-git clone https://github.com/katsuoki-nonaka-ag/ansible-zabbix.git
-```
 
-## ファイルのコピー
-`sudo cp -p ./ansible-zabbix/* /etc/ansible`
+3. playbook実行
 
-## playbook実行
 `ansible-playbook zabbix-install.yml`
+
+4. zabbixサーバーの設定ファイルを編集し、設定を追加
+
+※zabbix-install.ymlで設定したパスワードと同じパスワードを設定する。
+#### 設定ファイル編集
+```
+cp /etc/zabbix/zabbix_server.conf /etc/zabbix/zabbix_server.conf_org
+vi /etc/zabbix/zabbix_server.conf
+```
+
+#### 設定ファイルに追加
+
+`DBPassword=[パスワードを入力]`
+
+5. apacheの設定ファイルを編集
+
+#### 設定ファイル編集
+
+```
+cp /etc/zabbix/apache.conf /etc/zabbix/apache.conf_org
+vi /etc/zabbix/apache.conf
+```
+#### 設定ファイルに追加
+
+`php_value date.timezone Asia/Tokyo`
+
+6. デーモンを起動し、有効化
+
+```
+systemctl restart zabbix-server zabbix-agent apache2
+systemctl enable zabbix-server zabbix-agent apache2
+```
+
+7. 動作確認
+
+ゲストOS上でfirefoxを起動し、localhost/zabbixにアクセスし、WEB-UIが表示されることを確認する。
+
+## <a id="#end"></a>さいごに
+
 
