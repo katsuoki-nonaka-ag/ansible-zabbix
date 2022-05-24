@@ -157,7 +157,7 @@ ansible-playbook zabbix-install.yml
 
 4. zabbixサーバーの設定ファイルを編集し、設定を追加
 
-**※zabbix-install.ymlで設定したパスワードと同じパスワードを設定する。**
+DBPasswordはzabbix-install.ymlで設定したパスワードと同じパスワードを設定する。
 #### 設定ファイル編集
 ```
 cp /etc/zabbix/zabbix_server.conf /etc/zabbix/zabbix_server.conf_org
