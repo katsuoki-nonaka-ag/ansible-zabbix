@@ -35,6 +35,9 @@
           - zabbix-agent
           - postgresql
 
+    - name: install zabbix-api
+      shell: pip install zabbix-api
+
     - name: create db
       become_user: postgres
       postgresql_db:
