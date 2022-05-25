@@ -211,5 +211,5 @@ ansible-playbook zabbix-install.yml
 
 ゲストOS上でfirefoxを起動し、localhost/zabbixにアクセスし、WEB-UIが表示されることを確認する。
 
-![画像](https://gyazo.com/4879bac99fcb24b803dcd1dce45ad5c6)
+![画像](https://gyazo.com/19a090597da1ee4da8865c25a387d681)
 
