@@ -61,7 +61,11 @@ ansibleの説明は後で行いますが、使えるようになると「自動�
 - (ホストOS) windows 10
 - (ゲストOS) Ubuntu desktop 20.04.4
 - virtualbox 6.1
-- zabbix 6.0
+- zabbix-server-pgsql
+- zabbix-frontend-php
+- php7.4-pgsql
+- zabbix-apache-conf
+- zabbix-agent
 - postgresql 12.10
 
 <br>
@@ -111,7 +115,7 @@ sudo apt install -y ansible
         url: https://repo.zabbix.com/zabbix/6.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_6.0-1+ubuntu20.04_all.deb
         dest: /etc/ansible
 
-    - name: dpkg
+    - name: dpkg zabbix
       shell: dpkg -i zabbix-release_6.0-1+ubuntu20.04_all.deb
 
     - name: apt update
@@ -175,9 +179,9 @@ sudo apt install -y ansible
 
 #### zabbix_server.confを用意
 
-設定ファイルzabbix_server.confの以下の行を編集し、/etc/ansibleに用意する。
+zabbix_server.confの以下の行を編集したファイルを/etc/ansibleに用意する。
 
-※zabbix-install.ymlのpostgresqlのユーザ作成時に設定したパスワードを入力する。
+※zabbix-install.ymlのpostgresqlのユーザ作成で設定したパスワードを入力する。
 
 ```
 【変更前】
@@ -188,7 +192,7 @@ DBPassword=[パスワードを入力]
 
 #### apache.confを用意
 
-設定ファイルapache.confの以下の行を編集し、/etc/ansibleに用意する。
+apache.confの以下の行を編集したファイルを/etc/ansibleに用意する。
 
 ```
 【変更前】
