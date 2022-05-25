@@ -51,6 +51,7 @@ ansibleの説明は後で行いますが、使えるようになると「自動�
 ## <a href="#prerequisite">前提条件</a>
 - [virtualbox](https://www.virtualbox.org/wiki/Downloads)インストール済み
 - 仮想環境上で[Ubuntu desktop 20.04](http://cdimage.ubuntulinux.jp/releases/20.04.1/)インストール済み
+- 
 
 <br>
 
@@ -61,7 +62,7 @@ ansibleの説明は後で行いますが、使えるようになると「自動�
 - (ゲストOS) Ubuntu desktop 20.04.4
 - virtualbox 6.1
 - zabbix 6.0
-- postgresql
+- postgresql 12.10
 
 <br>
 
@@ -80,22 +81,14 @@ ansibleの説明は後で行いますが、使えるようになると「自動�
 1. ansibleをインストール
 
 ```
-sudo -s
-apt install -y ansible
+sudo apt install -y ansible
 ```
 
-2. バックアップ取得
+2. ansible用にファイルを用意
 
-```
-cd /etc/ansilbe
-mkdir bk
-cp -p ansible.cfg bk/ansible.cfg.org
-cp -p hosts bk/hosts
-```
+#### playbookとしてzabbix-install.ymlを用意
 
-3. playbook作成
-
-`vi zabbix-install.yml`でplaybookを作成し、以下のように編集
+/etc/ansibleにzabbix-install.ymlを用意
 
 ```
 - hosts: all
@@ -114,7 +107,9 @@ cp -p hosts bk/hosts
       shell: pip install psycopg2-binary
 
     - name: install zabbix repos
-      shell: wget https://repo.zabbix.com/zabbix/6.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_6.0-1+ubuntu20.04_all.deb
+      get_url:
+        url: https://repo.zabbix.com/zabbix/6.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_6.0-1+ubuntu20.04_all.deb
+        dest: /etc/ansible
 
     - name: dpkg
       shell: dpkg -i zabbix-release_6.0-1+ubuntu20.04_all.deb
@@ -146,6 +141,60 @@ cp -p hosts bk/hosts
 
     - name: configure db
       shell: zcat /usr/share/doc/zabbix-server-pgsql*/create.sql.gz | sudo -u zabbix psql zabbix
+
+    - name: get server conf backup
+      shell: cp /etc/zabbix/zabbix_server.conf /etc/zabbix/zabbix_server.conf_org
+
+    - name: get apache backup
+      shell: cp /etc/zabbix/apache.conf /etc/zabbix/apache.conf_org
+
+    - name: copy server conf
+      shell: cp -p /etc/ansible/zabbix_server.conf /etc/zabbix/zabbix_server.conf
+
+    - name: copy apache conf
+      shell: cp -p /etc/ansible/apache.conf /etc/zabbix/apache.conf
+
+    - name: restart zabbix server
+      service: 
+        name: zabbix-server
+        state: restarted
+        enabled: yes
+
+    - name: restart zabbix agent
+      service:
+        name: zabbix-agent
+        state: restarted
+        enabled: yes
+
+    - name:
+      service:
+        name: apache2
+        state: restarted
+        enabled: yes
+```
+
+#### zabbix_server.confを用意
+
+設定ファイルzabbix_server.confの以下の行を編集し、/etc/ansibleに用意する。
+
+※zabbix-install.ymlのpostgresqlのユーザ作成時に設定したパスワードを入力する。
+
+```
+【変更前】
+# DBPassword=
+【変更後】
+DBPassword=[パスワードを入力]
+```
+
+#### apache.confを用意
+
+設定ファイルapache.confの以下の行を編集し、/etc/ansibleに用意する。
+
+```
+【変更前】
+# php_value date.timezone Europe/Riga
+【変更後】
+php_value date.timezone Asia/Tokyo
 ```
 
 3. playbook実行
@@ -154,43 +203,7 @@ cp -p hosts bk/hosts
 ansible-playbook zabbix-install.yml
 ```
 
-4. zabbixサーバーの設定ファイルを編集し、設定を追加
-
-DBPasswordはzabbix-install.ymlで設定したパスワードと同じパスワードを設定する。
-#### 設定ファイル編集
-```
-cp /etc/zabbix/zabbix_server.conf /etc/zabbix/zabbix_server.conf_org
-vi /etc/zabbix/zabbix_server.conf
-```
-
-#### 設定ファイルに追加
-
-```
-DBPassword=[パスワードを入力]`
-```
-
-5. apacheの設定ファイルを編集
-
-#### 設定ファイル編集
-
-```
-cp /etc/zabbix/apache.conf /etc/zabbix/apache.conf_org
-vi /etc/zabbix/apache.conf
-```
-#### 設定ファイルに追加
-
-```
-php_value date.timezone Asia/Tokyo`
-```
-
-6. デーモンを起動し、有効化
-
-```
-systemctl restart zabbix-server zabbix-agent apache2
-systemctl enable zabbix-server zabbix-agent apache2
-```
-
-7. 動作確認
+4. 動作確認
 
 ゲストOS上でfirefoxを起動し、localhost/zabbixにアクセスし、WEB-UIが表示されることを確認する。
 

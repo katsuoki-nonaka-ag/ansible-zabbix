@@ -11,9 +11,6 @@
 [servers]
 localhost ansible_connection=local
 
-[db]
-localhost ansible_connection=local
-
 # Ex 1: Ungrouped hosts, specify before any group headers.
 
 #green.example.com
