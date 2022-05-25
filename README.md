@@ -3,7 +3,7 @@
 初めまして、AGESTでエンジニアをしているのなかです。
 <br>
 今回はansibleという自動化ツールによるzabbixサーバーの構築について書いていきます。
-ansibleの説明は後で行いますが、使えるようになると「自動化って便利だなあ」と思えるので試してみるのをオススメします。
+ansibleの説明は後で行いますが、今回の構成だと10分程度でサーバーを構築出来るようになります。
 
 <br>
 
@@ -49,9 +49,9 @@ ansibleの説明は後で行いますが、使えるようになると「自動�
 <a id="prerequisite"></a>
 
 ## <a href="#prerequisite">前提条件</a>
-- [virtualbox](https://www.virtualbox.org/wiki/Downloads)インストール済み
-- 仮想環境上で[Ubuntu desktop 20.04](http://cdimage.ubuntulinux.jp/releases/20.04.1/)インストール済み
-- 
+- [virtualbox](https://www.virtualbox.org/wiki/Downloads)インストール
+- 仮想環境上で[Ubuntu desktop 20.04](http://cdimage.ubuntulinux.jp/releases/20.04.1/)インストール
+- デフォルトのzabbix_server.confやapache.confを取得
 
 <br>
 
@@ -61,11 +61,11 @@ ansibleの説明は後で行いますが、使えるようになると「自動�
 - (ホストOS) windows 10
 - (ゲストOS) Ubuntu desktop 20.04.4
 - virtualbox 6.1
-- zabbix-server-pgsql
-- zabbix-frontend-php
-- php7.4-pgsql
-- zabbix-apache-conf
-- zabbix-agent
+- zabbix-server-pgsql 6.2.0
+- zabbix-frontend-php 6.2.0
+- php-pgsql 7.4
+- zabbix-apache-conf 6.2.0
+- zabbix-agent 6.2.0
 - postgresql 12.10
 
 <br>
@@ -112,11 +112,11 @@ sudo apt install -y ansible
 
     - name: install zabbix repos
       get_url:
-        url: https://repo.zabbix.com/zabbix/6.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_6.0-1+ubuntu20.04_all.deb
-        dest: /etc/ansible
+        url: https://repo.zabbix.com/zabbix/6.1/ubuntu/pool/main/z/zabbix-release/zabbix-release_6.1-1+ubuntu20.04_all.deb
+        dest: /tmp
 
-    - name: dpkg zabbix
-      shell: dpkg -i zabbix-release_6.0-1+ubuntu20.04_all.deb
+    - name: dpkg zabbix repos
+      shell: dpkg -i /tmp/zabbix-release_6.1-1+ubuntu20.04_all.deb
 
     - name: apt update
       shell: apt update
@@ -126,7 +126,7 @@ sudo apt install -y ansible
         name:
           - zabbix-server-pgsql
           - zabbix-frontend-php
-          - php7.4-pgsql
+          - php-pgsql
           - zabbix-apache-conf
           - zabbix-agent
           - postgresql
@@ -141,7 +141,7 @@ sudo apt install -y ansible
       postgresql_user:
         db: zabbix
         name: zabbix
-        password: [パスワードを入力]
+        password: hogehoge
 
     - name: configure db
       shell: zcat /usr/share/doc/zabbix-server-pgsql*/create.sql.gz | sudo -u zabbix psql zabbix
@@ -211,5 +211,5 @@ ansible-playbook zabbix-install.yml
 
 ゲストOS上でfirefoxを起動し、localhost/zabbixにアクセスし、WEB-UIが表示されることを確認する。
 
-
+image.png
 
