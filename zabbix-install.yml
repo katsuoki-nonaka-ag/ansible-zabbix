@@ -15,14 +15,14 @@
 
     - name: install zabbix repos
       get_url:
-        url: https://repo.zabbix.com/zabbix/6.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_6.0-2+ubuntu22.04_all.deb
+        url: https://repo.zabbix.com/zabbix/6.1/ubuntu/pool/main/z/zabbix-release/zabbix-release_6.1-1+ubuntu20.04_all.deb
         dest: /etc/ansible
 
     - name: dpkg zabbix repos
-      shell: dpkg -i zabbix-release_6.0-2+ubuntu22.04_all.deb
+      shell: dpkg -i zabbix-release_6.1-1+ubuntu20.04_all.deb
 
     - name: mv zabbix repos
-      shell: mv zabbix-release_6.0-2+ubuntu22.04_all.deb /tmp
+      shell: mv zabbix-release_6.0-1+ubuntu20.04_all.deb /tmp
 
     - name: apt update
       shell: apt update
