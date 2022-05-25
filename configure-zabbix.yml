@@ -1,0 +1,20 @@
+- hosts: localhost
+  connection: local
+  become: yes
+  tasks:
+    - name: Create a new host or update an existing host's info
+      local_action:
+        module: zabbix_host
+        server_url: http://localhost/zabbix/
+        login_user: Admin
+        login_password: zabbix
+        host_name: ExampleHosts
+        host_groups:
+          - Linux servers
+        interfaces:
+          - type: 1
+            main: 1
+            useip: 1
+            ip: 172.0.0.1
+            dns: ""
+            port: 10050
