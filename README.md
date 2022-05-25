@@ -1,4 +1,4 @@
-# ansibleによるzabbixサーバー構築の自動化に挑戦
+# ansibleによるzabbixサーバー構築の自動化
 
 初めまして、AGESTでエンジニアをしているのなかです。
 <br>
@@ -19,6 +19,9 @@ ansibleの説明は後で行いますが、今回の構成だと10分程度で�
   - [概要](#summary)
   - [手順](#process)
 
+- [注意点](#important)
+
+- [改善点](#improvement)
 
 <a id="ansible"></a>
 
@@ -30,6 +33,20 @@ ansibleの説明は後で行いますが、今回の構成だと10分程度で�
 > のオーケストレーションが可能になります。
 
 この説明によるとansibleはサーバーやルーターの構築・管理・設定等を自動化することが可能です。
+
+例えば今回のzabbixサーバー構築では次の項目を自動化しました。
+
+- パッケージのインストール
+- リポジトリのインストール
+- DBの作成
+- DBのユーザー作成
+- ファイル配置
+- サービスの再起動
+- サービスの自動起動有効
+
+また最小の構成にしているためコードが短いですが、冪等性があるようにするのであれば複雑になります。
+
+**※ansibleは自動化ツールなので、冪等性がある方が良いです。**
 
 <br>
 
@@ -44,14 +61,16 @@ ansibleの説明は後で行いますが、今回の構成だと10分程度で�
 
 この説明によるとzabbixはサーバーを監視し、グラフ化や通知を行うことが可能です。
 
+今回はzabbixサーバーが表示出来るところまでを実施しているので、zabbixサーバーの設定はしていません。
+
 <br>
 
 <a id="prerequisite"></a>
 
 ## <a href="#prerequisite">前提条件</a>
-- [virtualbox](https://www.virtualbox.org/wiki/Downloads)インストール
-- 仮想環境上で[Ubuntu desktop 20.04](http://cdimage.ubuntulinux.jp/releases/20.04.1/)インストール
-- デフォルトのzabbix_server.confやapache.confを取得
+- [virtualbox](https://www.virtualbox.org/wiki/Downloads)インストール済み
+- 仮想環境上で[Ubuntu desktop 20.04](http://cdimage.ubuntulinux.jp/releases/20.04.1/)インストール済み
+- zabbixサーバーのデフォルトの設定ファイルzabbix_server.confやapache.confを取得済み
 
 <br>
 
@@ -90,12 +109,10 @@ sudo apt install -y ansible
 
 2. ansible用にファイルを用意
 
-#### playbookとしてzabbix-install.ymlを用意
-
 /etc/ansibleにzabbix-install.ymlを用意
 
 ```
-- hosts: all
+- hosts: localhost
   become: yes
   tasks:
     - name: install pip
@@ -175,6 +192,7 @@ sudo apt install -y ansible
         name: apache2
         state: restarted
         enabled: yes
+
 ```
 
 #### zabbix_server.confを用意
@@ -213,3 +231,11 @@ ansible-playbook zabbix-install.yml
 
 ![画像](https://gyazo.com/19a090597da1ee4da8865c25a387d681)
 
+<a id="important"></a>
+
+## <a href="#important">注意点</a>
+
+
+<a id="improvement"></a>
+
+## <a href="#improvement">改善点</a>

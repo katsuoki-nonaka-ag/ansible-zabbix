@@ -8,8 +8,8 @@
 #   - You can enter hostnames or ip addresses
 #   - A hostname/ip can be a member of multiple groups
 
-[servers]
-localhost ansible_connection=local
+#[servers]
+#localhost ansible_connection=local
 
 # Ex 1: Ungrouped hosts, specify before any group headers.
 
