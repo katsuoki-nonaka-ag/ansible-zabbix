@@ -3,21 +3,23 @@
 初めまして、AGESTでエンジニアをしているのなかです。
 <br>
 今回はansibleという自動化ツールによるzabbixサーバーの構築について書いていきます。
-ansibleの説明は後で行いますが、今回の構成だと10分程度でサーバーを構築出来るようになります。
+ansibleの説明は後で行いますが、本構成だと10分程度でサーバーを構築できるようになります。
 
 <br>
 
 - [ansibleとは](#ansible)
-
-- [zabbixとは](#zabbix)
 
 - [前提条件](#prerequisite)
 
 - [開発環境](#environment)
 
 - [構築](#build)
-  - [概要](#summary)
-  - [手順](#process)
+  1. [ansibleをインストール](#install-ansible)
+  2. [ansible用にファイルを用意](#set-conf-ansible)
+  3. [zabbixをインストールするplaybook実行](#build-playbook)
+  4. [WEBでzabbixの初期設定を実施](#setting)
+  5. [zabbixを設定するplaybookを実行](#configure-playbook)
+  6. [動作確認](#check)
 
 - [注意点](#important)
 
@@ -34,8 +36,7 @@ ansibleの説明は後で行いますが、今回の構成だと10分程度で�
 
 つまりansibleはサーバーやルーターの構築・管理・設定を自動化します。
 
-例えばzabbixサーバー構築だと次の項目を自動化出来ます。
-
+例えばzabbixサーバーだと次の項目を自動で実行します。
 - パッケージのインストール
 - リポジトリのインストール
 - DBの作成
@@ -45,22 +46,7 @@ ansibleの説明は後で行いますが、今回の構成だと10分程度で�
 - サービスの自動起動有効
 - zabbixのホスト作成
 
-これらが自動化出来るとかなり便利ですね。
-
-<br>
-
-<a id="zabbix"></a>
-
-## <a href="#zabbix">zabbixとは</a>
-[zabbixの公式サイト](https://www.zabbix.com/documentation/2.2/jp/manual/introduction/about)では次のように説明されています。
-> Zabbixは多数のネットワークのパラメータおよびサーバの稼働状態と整合性を監視するためのソフトウェアです。
-> Zabbixは柔軟性の高い通知メカニズムを備え、ユーザはあらゆるイベントからメールベースの通知を行うように
-> 設定することができます。これらの機能によりサーバの障害に迅速に対応することができます。
-> Zabbixは保存されたデータをもとにすぐれたレポートやデータのグラフィカル表示機能を提供します。
-
-この説明によるとzabbixはサーバーを監視し、グラフ化や通知を行うことが可能です。
-
-ansibleのzabbixモジュールを利用することで、zabbixも設定出来ます。
+またansibleは[様々なモジュール](https://docs.ansible.com/ansible/2.9_ja/modules/list_of_all_modules.html)を利用可能で、本構成ではDBとzabbixを設定します。
 
 <br>
 
@@ -80,13 +66,6 @@ ansibleのzabbixモジュールを利用することで、zabbixも設定出来�
 - (ゲストOS) Ubuntu desktop 20.04.4
 - virtualbox 6.1
 - ansible 2.9.6
-- zabbix-server-pgsql 6.0.4
-- zabbix-frontend-php 6.0.4
-- php-pgsql 7.4.3
-- zabbix-apache-conf 6.0.4
-- zabbix-sql-scripts 6.0.4
-- zabbix-agent 6.0.4
-- postgresql 12
 
 <br>
 
@@ -94,23 +73,19 @@ ansibleのzabbixモジュールを利用することで、zabbixも設定出来�
 
 ## <a href="#build">構築</a>
 
-<a id="summary"></a>
+<a id="install-ansible"></a>
 
-### <a href="#summary">概要</a>
-ゲストOS上でansibleのplaybookを実行し、zabbixサーバーを構築
-
-<a id="process"></a>
-
-### <a href="#process">手順</a>
-1. ansibleをインストール
+1. <a href="#install">ansibleをインストール</a>
 
 ```
 sudo apt install -y ansible
 ```
 
-2. ansible用にファイルを用意
+<a id="set-conf-ansible"></a>
 
-/etc/ansibleにzabbix-install.ymlを用意
+2. <a href="#set-conf-ansible">ansible用にファイルを用意</a>
+
+### /etc/ansibleにzabbix-install.ymlを用意
 
 ```
 - hosts: localhost
@@ -130,11 +105,11 @@ sudo apt install -y ansible
 
     - name: install zabbix repos
       get_url:
-        url: https://repo.zabbix.com/zabbix/6.1/ubuntu/pool/main/z/zabbix-release/zabbix-release_6.1-1+ubuntu20.04_all.deb
+        url: https://repo.zabbix.com/zabbix/6.0/ubuntu/pool/main/z/zabbix-release/zabbix-release_6.0-1+ubuntu20.04_all.deb
         dest: /tmp
 
     - name: dpkg zabbix repos
-      shell: dpkg -i /tmp/zabbix-release_6.1-1+ubuntu20.04_all.deb
+      shell: dpkg -i /tmp/zabbix-release_6.0-1+ubuntu20.04_all.deb
 
     - name: apt update
       shell: apt update
@@ -144,10 +119,14 @@ sudo apt install -y ansible
         name:
           - zabbix-server-pgsql
           - zabbix-frontend-php
-          - php-pgsql
+          - php7.4-pgsql
           - zabbix-apache-conf
+          - zabbix-sql-scripts
           - zabbix-agent
           - postgresql
+
+    - name: install zabbix-api
+      shell: pip install zabbix-api
 
     - name: create db
       become_user: postgres
@@ -162,7 +141,7 @@ sudo apt install -y ansible
         password: hogehoge
 
     - name: configure db
-      shell: zcat /usr/share/doc/zabbix-server-pgsql*/create.sql.gz | sudo -u zabbix psql zabbix
+      shell: zcat /usr/share/doc/zabbix-sql-scripts/postgresql/server.sql.gz | sudo -u zabbix psql zabbix
 
     - name: get server conf backup
       shell: cp /etc/zabbix/zabbix_server.conf /etc/zabbix/zabbix_server.conf_org
@@ -193,10 +172,9 @@ sudo apt install -y ansible
         name: apache2
         state: restarted
         enabled: yes
-
 ```
 
-#### zabbix_server.confを用意
+### zabbix_server.confを用意
 
 zabbix_server.confの以下の行を編集したファイルを/etc/ansibleに用意する。
 
@@ -209,7 +187,7 @@ zabbix_server.confの以下の行を編集したファイルを/etc/ansibleに�
 DBPassword=[パスワードを入力]
 ```
 
-#### apache.confを用意
+### apache.confを用意
 
 apache.confの以下の行を編集したファイルを/etc/ansibleに用意する。
 
@@ -220,23 +198,62 @@ apache.confの以下の行を編集したファイルを/etc/ansibleに用意す
 php_value date.timezone Asia/Tokyo
 ```
 
-3. playbook実行
+<a id="build-playbook"></a>
+
+3. <a href="#build-playbook">zabbixをインストールするplaybook実行</a>
 
 ```
 ansible-playbook zabbix-install.yml
 ```
 
-4. 動作確認
+<a id="setting"></a>
 
-ゲストOS上でfirefoxを起動し、localhost/zabbixにアクセスし、WEB-UIが表示されることを確認する。
+4. <a href="#setting">WEBでzabbixの初期設定を実施</a>
 
-![画像](https://gyazo.com/19a090597da1ee4da8865c25a387d681)
+<a id="configure-playbook"></a>
+
+5. <a href="#configure-playbook">zabbixを設定するplaybookを実行</a>
+
+/etc/ansibleにconfigure-zabbix.ymlを用意
+
+```
+- hosts: localhost
+  become: yes
+  tasks:
+    - name: Create a new host or update an existing host's info
+      local_action:
+        module: zabbix_host
+        server_url: http://localhost/zabbix/
+        login_user: Admin
+        login_password: zabbix
+        host_name: ExampleHosts
+        host_groups:
+          - Linux servers
+        link_templates:
+          - Linux CPU by Zabbix agent
+        interfaces:
+          - type: 1
+            main: 1
+            useip: 1
+            ip: 172.0.0.1
+            dns: ""
+            port: 10051
+```
+
+<a id="check"></a>
+
+6. <a href="#check">動作確認</a>
 
 <a id="important"></a>
 
 ## <a href="#important">注意点</a>
-
+playbookを実行する前にパッケージをサーバーを最新の状態にしていないとpipをインストールする際にエラーが発生する可能性があります。
 
 <a id="improvement"></a>
 
 ## <a href="#improvement">改善点</a>
+現状のコードだと冪等性が無いためファイルがある場合の処理や[OS・バージョン](https://www.zabbix.com/download?zabbix=6.0&os_distribution=ubuntu&os_version=20.04_focal&db=postgresql&ws=apache)による分岐等を作る必要があります。
+
+zabbixの初期設定をWEB上で実施していますが、この設定を自動化する方法があると、ホストの作成までを1つのplaybookで実行できるようになります。
+
+パスワードを平文で設定していますが、[ansible-vault](https://docs.ansible.com/ansible/2.9_ja/user_guide/vault.html)を利用し、暗号化をした方が良い。
