@@ -11,7 +11,7 @@
         host_groups:
           - Linux servers
         link_templates:
-          - Template OS Linux
+          - Linux CPU by Zabbix agent
         interfaces:
           - type: 1
             main: 1
