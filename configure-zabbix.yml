@@ -1,5 +1,4 @@
 - hosts: localhost
-  connection: local
   become: yes
   tasks:
     - name: Create a new host or update an existing host's info
