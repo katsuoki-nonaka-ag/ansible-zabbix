@@ -62,7 +62,7 @@ ansibleの説明は後で行いますが、今回の構成だと10分程度で�
 
 この説明によるとzabbixはサーバーを監視し、グラフ化や通知を行うことが可能です。
 
-今回はzabbixサーバーが表示出来るところまでを実施しているので、zabbixサーバーの設定はしていません。
+ansibleのzabbixモジュールを利用することで、zabbixも設定出来ます。
 
 <br>
 
@@ -82,13 +82,13 @@ ansibleの説明は後で行いますが、今回の構成だと10分程度で�
 - (ゲストOS) Ubuntu desktop 20.04.4
 - virtualbox 6.1
 - ansible 2.9.6
-- zabbix-server-pgsql 6.2.0
-- zabbix-frontend-php 6.2.0
-- php-pgsql 7.4
-- zabbix-apache-conf 6.2.0
-- zabbix-sql-scripts
-- zabbix-agent 6.2.0
-- postgresql 12.10
+- zabbix-server-pgsql 6.0.4
+- zabbix-frontend-php 6.0.4
+- php-pgsql 7.4.3
+- zabbix-apache-conf 6.0.4
+- zabbix-sql-scripts 6.0.4
+- zabbix-agent 6.0.4
+- postgresql 12
 
 <br>
 
