@@ -3,6 +3,7 @@
 初めまして、AGESTでエンジニアをしているのなかです。
 <br>
 今回はansibleという自動化ツールによるzabbixサーバーの構築について書いていきます。
+<br>
 ansibleを使えると10分程度でzabbixサーバーを構築できるようになります。
 <br>
 それではansibleを使えるようになるために**ansibleとは何か**や**どうやって使うのか**について説明していきます。
@@ -59,102 +60,14 @@ ansibleを使えると10分程度でzabbixサーバーを構築できるよう�
 
 <br>
 
-### zabbix_server.conf
-```
-LogFile=/var/log/zabbix/zabbix_server.log
-LogFileSize=0
-PidFile=/run/zabbix/zabbix_server.pid
-SocketDir=/run/zabbix
-DBName=zabbix
-DBUser=zabbix
-DBPassword=hogehoge
-SNMPTrapperFile=/var/log/snmptrap/snmptrap.log
-Timeout=4
-FpingLocation=/usr/bin/fping
-Fping6Location=/usr/bin/fping6
-LogSlowQueries=3000
-StatsAllowedIP=127.0.0.1
-```
-
-### apache.conf
-```
-# Define /zabbix alias, this is the default
-<IfModule mod_alias.c>
-    Alias /zabbix /usr/share/zabbix
-</IfModule>
-
-<Directory "/usr/share/zabbix">
-    Options FollowSymLinks
-    AllowOverride None
-    Order allow,deny
-    Allow from all
-
-    <IfModule mod_php7.c>
-        php_value max_execution_time 300
-        php_value memory_limit 128M
-        php_value post_max_size 16M
-        php_value upload_max_filesize 2M
-        php_value max_input_time 300
-        php_value max_input_vars 10000
-        php_value always_populate_raw_post_data -1
-        php_value date.timezone Asia/Tokyo
-    </IfModule>
-</Directory>
-
-<Directory "/usr/share/zabbix/conf">
-    Order deny,allow
-    Deny from all
-    <files *.php>
-        Order deny,allow
-        Deny from all
-    </files>
-</Directory>
-
-<Directory "/usr/share/zabbix/app">
-    Order deny,allow
-    Deny from all
-    <files *.php>
-        Order deny,allow
-        Deny from all
-    </files>
-</Directory>
-
-<Directory "/usr/share/zabbix/include">
-    Order deny,allow
-    Deny from all
-    <files *.php>
-        Order deny,allow
-        Deny from all
-    </files>
-</Directory>
-
-<Directory "/usr/share/zabbix/local">
-    Order deny,allow
-    Deny from all
-    <files *.php>
-        Order deny,allow
-        Deny from all
-    </files>
-</Directory>
-
-<Directory "/usr/share/zabbix/vendor">
-    Order deny,allow
-    Deny from all
-    <files *.php>
-        Order deny,allow
-        Deny from all
-    </files>
-</Directory>
-```
-
-<br>
-
 <a id="important"></a>
 
 ## 注意点
 2022年5月時点では[Ubuntu22.04でzabbixサーバーを構築](https://www.zabbix.com/download?zabbix=6.0&os_distribution=ubuntu&os_version=22.04_jammy&db=&ws=)することが出来ないためUbuntu 20.04を使用しています。
-
+<br>
 playbookを実行する前にパッケージリストを最新の状態にしていないとpipをインストールする際にエラーが発生することがあります。
+
+<br>
 
 <a id="build"></a>
 
@@ -171,7 +84,7 @@ sudo apt install -y ansible
 
 ### 2. ansible用にファイルを用意
 
-#### /etc/ansibleにzabbix-install.ymlを用意
+#### /etc/ansibleにzabbix-install.ymlを配置
 ```
 - hosts: localhost
   become: yes
@@ -259,6 +172,108 @@ sudo apt install -y ansible
         enabled: yes
 ```
 
+#### /etc/ansibleにzabbix_server.confを配置
+```
+LogFile=/var/log/zabbix/zabbix_server.log
+
+LogFileSize=0
+
+PidFile=/run/zabbix/zabbix_server.pid
+
+SocketDir=/run/zabbix
+
+DBName=zabbix
+
+DBUser=zabbix
+
+# DBPasswordを追加
+DBPassword=hogehoge
+
+SNMPTrapperFile=/var/log/snmptrap/snmptrap.log
+
+Timeout=4
+
+FpingLocation=/usr/bin/fping
+
+Fping6Location=/usr/bin/fping6
+
+LogSlowQueries=3000
+
+StatsAllowedIP=127.0.0.1
+```
+
+#### /etc/ansibleにapache.confを配置
+```
+# Define /zabbix alias, this is the default
+<IfModule mod_alias.c>
+    Alias /zabbix /usr/share/zabbix
+</IfModule>
+
+<Directory "/usr/share/zabbix">
+    Options FollowSymLinks
+    AllowOverride None
+    Order allow,deny
+    Allow from all
+
+    <IfModule mod_php7.c>
+        php_value max_execution_time 300
+        php_value memory_limit 128M
+        php_value post_max_size 16M
+        php_value upload_max_filesize 2M
+        php_value max_input_time 300
+        php_value max_input_vars 10000
+        php_value always_populate_raw_post_data -1
+        # タイムゾーンを変更
+        php_value date.timezone Asia/Tokyo
+    </IfModule>
+</Directory>
+
+<Directory "/usr/share/zabbix/conf">
+    Order deny,allow
+    Deny from all
+    <files *.php>
+        Order deny,allow
+        Deny from all
+    </files>
+</Directory>
+
+<Directory "/usr/share/zabbix/app">
+    Order deny,allow
+    Deny from all
+    <files *.php>
+        Order deny,allow
+        Deny from all
+    </files>
+</Directory>
+
+<Directory "/usr/share/zabbix/include">
+    Order deny,allow
+    Deny from all
+    <files *.php>
+        Order deny,allow
+        Deny from all
+    </files>
+</Directory>
+
+<Directory "/usr/share/zabbix/local">
+    Order deny,allow
+    Deny from all
+    <files *.php>
+        Order deny,allow
+        Deny from all
+    </files>
+</Directory>
+
+<Directory "/usr/share/zabbix/vendor">
+    Order deny,allow
+    Deny from all
+    <files *.php>
+        Order deny,allow
+        Deny from all
+    </files>
+</Directory>
+```
+
 ### 3. zabbixをインストールするplaybook実行
 ```
 ansible-playbook zabbix-install.yml
@@ -278,7 +293,7 @@ Configure DB connectionの画面はポート番号とパスワードを入力す
 <a id="configure-playbook"></a>
 
 ### 5. zabbixを設定するplaybookを実行
-/etc/ansibleにconfigure-zabbix.ymlを用意
+#### /etc/ansibleにconfigure-zabbix.ymlを用意
 ```
 - hosts: localhost
   become: yes
