@@ -10,11 +10,9 @@ ansibleを使えると10分程度でzabbixサーバーを構築できるよう�
 <br>
 
 - [ansibleとは](#ansible)
-
-- [前提条件](#prerequisite)
-
 - [開発環境](#environment)
-
+- [注意点](#important)
+- [前提条件](#prerequisite)
 - [構築](#build)
   1. [ansibleをインストール](#install-ansible)
   2. [ansible用にファイルを用意](#set-conf-ansible)
@@ -22,9 +20,6 @@ ansibleを使えると10分程度でzabbixサーバーを構築できるよう�
   4. [WEBでzabbixの初期設定を実施](#setting)
   5. [zabbixを設定するplaybookを実行](#configure-playbook)
   6. [動作確認](#check)
-
-- [注意点](#important)
-
 - [改善点](#improvement)
 
 <a id="ansible"></a>
@@ -37,14 +32,24 @@ ansibleを使えると10分程度でzabbixサーバーを構築できるよう�
 > のオーケストレーションが可能になります。
 
 簡単に説明するとansibleはサーバーやルーターの構築・管理・設定を自動化するとを目的としています。
-
+<br>
 例えば今回のzabbixサーバー構築では[公式サイト手順](https://www.zabbix.com/download?zabbix=6.0&os_distribution=ubuntu&os_version=20.04_focal&db=postgresql&ws=apache)を全て自動化できます。
-
+<br>
 さらにansibleは[様々なモジュール](https://docs.ansible.com/ansible/2.9_ja/modules/list_of_all_modules.html)が利用可能なため、DBの作成やzabbixのホスト作成等の様々な設定を自動化できます。
 
 <br>
 
+<a id="environment"></a>
+
+## 開発環境
+- (ホストOS) windows 10
+- (ゲストOS) Ubuntu desktop 20.04.4
+- virtualbox 6.1
+- ansible 2.9.6
+
 <a id="prerequisite"></a>
+
+<br>
 
 ## 前提条件
 - [virtualbox](https://www.virtualbox.org/wiki/Downloads)インストール済み
@@ -141,16 +146,6 @@ StatsAllowedIP=127.0.0.1
     </files>
 </Directory>
 ```
-
-<br>
-
-<a id="environment"></a>
-
-## 開発環境
-- (ホストOS) windows 10
-- (ゲストOS) Ubuntu desktop 20.04.4
-- virtualbox 6.1
-- ansible 2.9.6
 
 <br>
 
@@ -273,7 +268,7 @@ ansible-playbook zabbix-install.yml
 
 ### 4. WEBインターフェースによるzabbixインストール
 localhost/zabbixにアクセスし、[公式ドキュメント](https://www.zabbix.com/documentation/current/en/manual/installation/frontend)を参考にインストールします。
-
+<br>
 Configure DB connectionの画面はポート番号とパスワードを入力することでDBに接続できます。
 - Database port: 5432
 - Password: hogehoge
