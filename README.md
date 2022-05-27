@@ -159,7 +159,7 @@ StatsAllowedIP=127.0.0.1
 
 <a id="install-ansible"></a>
 
-1. <a href="#install">ansibleをインストール</a>
+### 1. ansibleをインストール
 
 ```
 sudo apt install -y ansible
@@ -167,9 +167,9 @@ sudo apt install -y ansible
 
 <a id="set-conf-ansible"></a>
 
-2. <a href="#set-conf-ansible">ansible用にファイルを用意</a>
+### 2. ansible用にファイルを用意
 
-### /etc/ansibleにzabbix-install.ymlを用意
+#### /etc/ansibleにzabbix-install.ymlを用意
 
 ```
 - hosts: localhost
@@ -258,7 +258,7 @@ sudo apt install -y ansible
         enabled: yes
 ```
 
-3. zabbixをインストールするplaybook実行
+### 3. zabbixをインストールするplaybook実行
 
 ```
 ansible-playbook zabbix-install.yml
@@ -266,14 +266,14 @@ ansible-playbook zabbix-install.yml
 
 <a id="setting"></a>
 
-4. WEBでzabbixの初期設定を実施
+### 4. WEBでzabbixの初期設定を実施
 
 
 
 
 <a id="configure-playbook"></a>
 
-5. zabbixを設定するplaybookを実行
+### 5. zabbixを設定するplaybookを実行
 
 /etc/ansibleにconfigure-zabbix.ymlを用意
 
@@ -303,7 +303,7 @@ ansible-playbook zabbix-install.yml
 
 <a id="check"></a>
 
-6. 動作確認
+### 6. 動作確認
 
 
 
