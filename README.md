@@ -36,15 +36,7 @@ ansibleの説明は後で行いますが、本構成だと10分程度でサー�
 
 つまりansibleはサーバーやルーターの構築・管理・設定を自動化します。
 
-例えばzabbixサーバーだと次の項目を自動で実行します。
-- パッケージのインストール
-- リポジトリのインストール
-- DBの作成
-- DBのユーザー作成
-- ファイル配置
-- サービスの再起動
-- サービスの自動起動有効
-- zabbixのホスト作成
+例えば本構成ではzabbixサーバーを構築する[公式サイト手順](https://www.zabbix.com/download?zabbix=6.0&os_distribution=ubuntu&os_version=20.04_focal&db=postgresql&ws=apache)を自動化します。
 
 またansibleは[様々なモジュール](https://docs.ansible.com/ansible/2.9_ja/modules/list_of_all_modules.html)を利用可能で、本構成ではDBとzabbixを設定します。
 
@@ -55,7 +47,99 @@ ansibleの説明は後で行いますが、本構成だと10分程度でサー�
 ## <a href="#prerequisite">前提条件</a>
 - [virtualbox](https://www.virtualbox.org/wiki/Downloads)インストール済み
 - 仮想環境上で[Ubuntu desktop 20.04](http://cdimage.ubuntulinux.jp/releases/20.04.1/)インストール済み
-- zabbixサーバーのデフォルトの設定ファイルzabbix_server.confやapache.confを取得済み
+- zabbixサーバーの設定ファイル[zabbix_server.conf](https://www.zabbix.com/documentation/1.8/jp/manual/processes/zabbix_server)やapache.confを取得済み
+
+### zabbix_server.conf
+
+```
+LogFile=/var/log/zabbix/zabbix_server.log
+LogFileSize=0
+PidFile=/run/zabbix/zabbix_server.pid
+SocketDir=/run/zabbix
+DBName=zabbix
+DBUser=zabbix
+DBPassword=hogehoge
+SNMPTrapperFile=/var/log/snmptrap/snmptrap.log
+Timeout=4
+FpingLocation=/usr/bin/fping
+Fping6Location=/usr/bin/fping6
+LogSlowQueries=3000
+StatsAllowedIP=127.0.0.1
+
+```
+
+### apache.conf
+
+```
+# Define /zabbix alias, this is the default
+<IfModule mod_alias.c>
+    Alias /zabbix /usr/share/zabbix
+</IfModule>
+
+<Directory "/usr/share/zabbix">
+    Options FollowSymLinks
+    AllowOverride None
+    Order allow,deny
+    Allow from all
+
+    <IfModule mod_php7.c>
+        php_value max_execution_time 300
+        php_value memory_limit 128M
+        php_value post_max_size 16M
+        php_value upload_max_filesize 2M
+        php_value max_input_time 300
+        php_value max_input_vars 10000
+        php_value always_populate_raw_post_data -1
+        php_value date.timezone Asia/Tokyo
+    </IfModule>
+</Directory>
+
+<Directory "/usr/share/zabbix/conf">
+    Order deny,allow
+    Deny from all
+    <files *.php>
+        Order deny,allow
+        Deny from all
+    </files>
+</Directory>
+
+<Directory "/usr/share/zabbix/app">
+    Order deny,allow
+    Deny from all
+    <files *.php>
+        Order deny,allow
+        Deny from all
+    </files>
+</Directory>
+
+<Directory "/usr/share/zabbix/include">
+    Order deny,allow
+    Deny from all
+    <files *.php>
+        Order deny,allow
+        Deny from all
+    </files>
+</Directory>
+
+<Directory "/usr/share/zabbix/local">
+    Order deny,allow
+    Deny from all
+    <files *.php>
+        Order deny,allow
+        Deny from all
+    </files>
+</Directory>
+
+<Directory "/usr/share/zabbix/vendor">
+    Order deny,allow
+    Deny from all
+    <files *.php>
+        Order deny,allow
+        Deny from all
+    </files>
+</Directory>
+
+```
 
 <br>
 
@@ -87,7 +171,7 @@ sudo apt install -y ansible
 
 ### /etc/ansibleにzabbix-install.ymlを用意
 
-```
+``` zabbix-install.yml
 - hosts: localhost
   become: yes
   tasks:
@@ -174,32 +258,6 @@ sudo apt install -y ansible
         enabled: yes
 ```
 
-### zabbix_server.confを用意
-
-zabbix_server.confの以下の行を編集したファイルを/etc/ansibleに用意する。
-
-※zabbix-install.ymlのpostgresqlのユーザ作成で設定したパスワードを入力する。
-
-```
-【変更前】
-# DBPassword=
-【変更後】
-DBPassword=[パスワードを入力]
-```
-
-### apache.confを用意
-
-apache.confの以下の行を編集したファイルを/etc/ansibleに用意する。
-
-```
-【変更前】
-# php_value date.timezone Europe/Riga
-【変更後】
-php_value date.timezone Asia/Tokyo
-```
-
-<a id="build-playbook"></a>
-
 3. <a href="#build-playbook">zabbixをインストールするplaybook実行</a>
 
 ```
@@ -209,6 +267,9 @@ ansible-playbook zabbix-install.yml
 <a id="setting"></a>
 
 4. <a href="#setting">WEBでzabbixの初期設定を実施</a>
+
+
+
 
 <a id="configure-playbook"></a>
 
@@ -244,16 +305,18 @@ ansible-playbook zabbix-install.yml
 
 6. <a href="#check">動作確認</a>
 
+
+
 <a id="important"></a>
 
 ## <a href="#important">注意点</a>
-playbookを実行する前にパッケージをサーバーを最新の状態にしていないとpipをインストールする際にエラーが発生する可能性があります。
+playbookを実行する前にパッケージをサーバーを最新の状態にしていないとpipをインストールする際にエラーが発生することがあります。
 
 <a id="improvement"></a>
 
 ## <a href="#improvement">改善点</a>
-現状のコードだと冪等性が無いためファイルがある場合の処理や[OS・バージョン](https://www.zabbix.com/download?zabbix=6.0&os_distribution=ubuntu&os_version=20.04_focal&db=postgresql&ws=apache)による分岐等を作る必要があります。
+現状のコードだと冪等性が無いため[特定の条件(DBが既にある等)による処理のスキップ](https://docs.ansible.com/ansible/2.9_ja/user_guide/playbooks_conditionals.html#when)や[OS・バージョンによる分岐](https://docs.ansible.com/ansible/2.9_ja/user_guide/playbooks_conditionals.html#id8)等を作る必要があります。
 
 zabbixの初期設定をWEB上で実施していますが、この設定を自動化する方法があると、ホストの作成までを1つのplaybookで実行できるようになります。
 
-パスワードを平文で設定していますが、[ansible-vault](https://docs.ansible.com/ansible/2.9_ja/user_guide/vault.html)を利用し、暗号化をした方が良い。
+今回はパスワードを平文で設定していますが、[暗号化](https://docs.ansible.com/ansible/2.9_ja/user_guide/vault.html)することを検討する必要があります。
