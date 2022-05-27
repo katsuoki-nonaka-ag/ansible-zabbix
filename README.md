@@ -27,7 +27,7 @@ ansibleの説明は後で行いますが、本構成だと10分程度でサー�
 
 <a id="ansible"></a>
 
-## <a href="#ansible">ansibleとは</a>
+## ansibleとは
 [ansibleの公式サイト](https://docs.ansible.com/ansible/2.9_ja/index.html)では次のように説明されています。
 > Ansible は IT 自動化ツールです。 このツールを使用すると、
 > システムの構成、ソフトウェアの展開、
@@ -44,7 +44,7 @@ ansibleの説明は後で行いますが、本構成だと10分程度でサー�
 
 <a id="prerequisite"></a>
 
-## <a href="#prerequisite">前提条件</a>
+## 前提条件
 - [virtualbox](https://www.virtualbox.org/wiki/Downloads)インストール済み
 - 仮想環境上で[Ubuntu desktop 20.04](http://cdimage.ubuntulinux.jp/releases/20.04.1/)インストール済み
 - zabbixサーバーの設定ファイル[zabbix_server.conf](https://www.zabbix.com/documentation/1.8/jp/manual/processes/zabbix_server)やapache.confを取得済み
@@ -145,7 +145,7 @@ StatsAllowedIP=127.0.0.1
 
 <a id="environment"></a>
 
-## <a href="#environment">開発環境</a>
+## 開発環境
 - (ホストOS) windows 10
 - (ゲストOS) Ubuntu desktop 20.04.4
 - virtualbox 6.1
@@ -155,7 +155,7 @@ StatsAllowedIP=127.0.0.1
 
 <a id="build"></a>
 
-## <a href="#build">構築</a>
+## 構築
 
 <a id="install-ansible"></a>
 
@@ -171,7 +171,7 @@ sudo apt install -y ansible
 
 ### /etc/ansibleにzabbix-install.ymlを用意
 
-``` zabbix-install.yml
+```
 - hosts: localhost
   become: yes
   tasks:
@@ -258,7 +258,7 @@ sudo apt install -y ansible
         enabled: yes
 ```
 
-3. <a href="#build-playbook">zabbixをインストールするplaybook実行</a>
+3. zabbixをインストールするplaybook実行
 
 ```
 ansible-playbook zabbix-install.yml
@@ -266,14 +266,14 @@ ansible-playbook zabbix-install.yml
 
 <a id="setting"></a>
 
-4. <a href="#setting">WEBでzabbixの初期設定を実施</a>
+4. WEBでzabbixの初期設定を実施
 
 
 
 
 <a id="configure-playbook"></a>
 
-5. <a href="#configure-playbook">zabbixを設定するplaybookを実行</a>
+5. zabbixを設定するplaybookを実行
 
 /etc/ansibleにconfigure-zabbix.ymlを用意
 
@@ -303,18 +303,18 @@ ansible-playbook zabbix-install.yml
 
 <a id="check"></a>
 
-6. <a href="#check">動作確認</a>
+6. 動作確認
 
 
 
 <a id="important"></a>
 
-## <a href="#important">注意点</a>
+## 注意点
 playbookを実行する前にパッケージをサーバーを最新の状態にしていないとpipをインストールする際にエラーが発生することがあります。
 
 <a id="improvement"></a>
 
-## <a href="#improvement">改善点</a>
+## 改善点
 現状のコードだと冪等性が無いため[特定の条件(DBが既にある等)による処理のスキップ](https://docs.ansible.com/ansible/2.9_ja/user_guide/playbooks_conditionals.html#when)や[OS・バージョンによる分岐](https://docs.ansible.com/ansible/2.9_ja/user_guide/playbooks_conditionals.html#id8)等を作る必要があります。
 
 zabbixの初期設定をWEB上で実施していますが、この設定を自動化する方法があると、ホストの作成までを1つのplaybookで実行できるようになります。
