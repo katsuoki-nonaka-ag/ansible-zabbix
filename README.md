@@ -2,7 +2,7 @@
 
 初めまして、AGESTでエンジニアをしているのなかです。
 <br>
-今回はansibleという自動化ツールによるzabbixサーバーの構築について書いていきます。
+今回はansibleという自動化ツールによるzabbixサーバーの構築についての話になります。
 <br>
 ansibleを使えると10分程度でzabbixサーバーを構築できるようになります。
 <br>
@@ -32,9 +32,9 @@ ansibleを使えると10分程度でzabbixサーバーを構築できるよう�
 > より高度なITタスク (継続的なデプロイメントやダウンタイムなしのローリング更新など) 
 > のオーケストレーションが可能になります。
 
-簡単に説明するとansibleはサーバーやルーターの構築・管理・設定を自動化することを目的としています。
+簡単に説明するとansibleはサーバーやルーターの構築・管理・設定を自動化することを目的として使用されます。
 <br>
-例えば今回のzabbixサーバー構築では[公式サイトの手順](https://www.zabbix.com/download?zabbix=6.0&os_distribution=ubuntu&os_version=20.04_focal&db=postgresql&ws=apache)を全て自動化できます。
+例えば今回のzabbixサーバー構築では[公式サイトの手順](https://www.zabbix.com/download?zabbix=6.0&os_distribution=ubuntu&os_version=20.04_focal&db=postgresql&ws=apache)を全て自動化しています。
 <br>
 さらにansibleは[様々なモジュール](https://docs.ansible.com/ansible/2.9_ja/modules/list_of_all_modules.html)が利用可能なため、DBの作成やzabbixのホスト作成等の様々な設定を自動化できます。
 
@@ -54,7 +54,7 @@ ansibleを使えると10分程度でzabbixサーバーを構築できるよう�
 
 ## 前提条件
 - [virtualbox](https://www.virtualbox.org/wiki/Downloads)インストール済み
-- 仮想環境上で[Ubuntu desktop 20.04](http://cdimage.ubuntulinux.jp/releases/20.04.1/)インストール済み
+- 仮想環境上で[Ubuntu desktop 20.04](http://cdimage.ubuntulinux.jp/releases/20.04.1/)がインストール済み
 - Ubuntuが20.04の最新版(Ubuntu 20.04.4)でパッケージリストが最新の状態
 - zabbixサーバーの設定ファイル[zabbix_server.conf](https://www.zabbix.com/documentation/1.8/jp/manual/processes/zabbix_server)やapache.confを用意済み
 
@@ -83,7 +83,7 @@ sudo apt install -y ansible
 
 <a id="set-conf-ansible"></a>
 
-### 2. ansible用にファイルを用意
+### 2. ansible用にファイルを配置
 
 #### /etc/ansibleにzabbix-install.ymlを配置
 ```
@@ -294,7 +294,7 @@ Configure DB connectionの画面はポート番号とパスワードを入力す
 <a id="configure-playbook"></a>
 
 ### 5. zabbixを設定するplaybookを実行
-#### /etc/ansibleにconfigure-zabbix.ymlを用意
+#### /etc/ansibleにconfigure-zabbix.ymlを配置
 ```
 - hosts: localhost
   become: yes
@@ -327,10 +327,12 @@ WEB画面でExampleHostsが作成されていることを確認します。
 
 [![Image from Gyazo](https://i.gyazo.com/1582663304fa44f3605fcd4792af1938.png)](https://i.gyazo.com/1582663304fa44f3605fcd4792af1938.png)
 
+<br>
+
 <a id="improvement"></a>
 
 ## 改善点
-現状では最小構成かつ冪等性があまり無いため[ロール](https://docs.ansible.com/ansible/2.9_ja/user_guide/playbooks_reuse_roles.html)や[特定の条件(DBが既にある等)における処理](https://docs.ansible.com/ansible/2.9_ja/user_guide/playbooks_conditionals.html#when)や[OS・バージョンによる分岐](https://docs.ansible.com/ansible/2.9_ja/user_guide/playbooks_conditionals.html#id8)等を設定することで、冪等性がある複雑なサーバーの構築や設定ができるようになります。
+現状では最小構成かつ冪等性があまり無いため[ロール](https://docs.ansible.com/ansible/2.9_ja/user_guide/playbooks_reuse_roles.html)や[特定の条件(DBが既にある等)における処理](https://docs.ansible.com/ansible/2.9_ja/user_guide/playbooks_conditionals.html#when)や[OS・バージョンによる分岐](https://docs.ansible.com/ansible/2.9_ja/user_guide/playbooks_conditionals.html#id8)等を設定することで、冪等性がかなりある状態になり複雑なサーバーの構築や設定も出来るようになります。
 <br>
-サーバーにansible等の不要なパッケージをインストールしたくない場合は、構築するサーバー側のSSHと[hosts](https://docs.ansible.com/ansible/2.9_ja/user_guide/playbooks_intro.html#playbook-hosts-and-users)を設定することでホストOSや別のサーバーからansibleを実行できます。
+サーバーにansible等の不要なパッケージをインストールしたくない場合は、構築するサーバー側のSSHや[hosts](https://docs.ansible.com/ansible/2.9_ja/user_guide/playbooks_intro.html#playbook-hosts-and-users)を設定することでホストOSや別のサーバーからansibleを実行できます。
 
