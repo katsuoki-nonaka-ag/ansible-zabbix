@@ -3,7 +3,9 @@
 初めまして、AGESTでエンジニアをしているのなかです。
 <br>
 今回はansibleという自動化ツールによるzabbixサーバーの構築について書いていきます。
-ansibleの説明は後で行いますが、本構成だと10分程度でサーバーを構築できるようになります。
+ansibleを使えると10分程度でzabbixサーバーを構築できるようになります。
+<br>
+それではansibleを使えるようになるために**ansibleとは何か**や**どうやって使うのか**について説明していきます。
 
 <br>
 
@@ -28,17 +30,17 @@ ansibleの説明は後で行いますが、本構成だと10分程度でサー�
 <a id="ansible"></a>
 
 ## ansibleとは
-[ansibleの公式サイト](https://docs.ansible.com/ansible/2.9_ja/index.html)では次のように説明されています。
+[ansibleの公式ドキュメント](https://docs.ansible.com/ansible/2.9_ja/index.html)では次のように説明されています。
 > Ansible は IT 自動化ツールです。 このツールを使用すると、
 > システムの構成、ソフトウェアの展開、
 > より高度なITタスク (継続的なデプロイメントやダウンタイムなしのローリング更新など) 
 > のオーケストレーションが可能になります。
 
-つまりansibleはサーバーやルーターの構築・管理・設定を自動化します。
+簡単に説明するとansibleはサーバーやルーターの構築・管理・設定を自動化するとを目的としています。
 
-例えば本構成ではzabbixサーバーを構築する[公式サイト手順](https://www.zabbix.com/download?zabbix=6.0&os_distribution=ubuntu&os_version=20.04_focal&db=postgresql&ws=apache)を自動化します。
+例えば今回のzabbixサーバー構築では[公式サイト手順](https://www.zabbix.com/download?zabbix=6.0&os_distribution=ubuntu&os_version=20.04_focal&db=postgresql&ws=apache)を全て自動化できます。
 
-またansibleは[様々なモジュール](https://docs.ansible.com/ansible/2.9_ja/modules/list_of_all_modules.html)を利用可能で、本構成ではDBとzabbixを設定します。
+さらにansibleは[様々なモジュール](https://docs.ansible.com/ansible/2.9_ja/modules/list_of_all_modules.html)が利用可能なため、DBの作成やzabbixのホスト作成等の様々な設定を自動化できます。
 
 <br>
 
@@ -47,10 +49,12 @@ ansibleの説明は後で行いますが、本構成だと10分程度でサー�
 ## 前提条件
 - [virtualbox](https://www.virtualbox.org/wiki/Downloads)インストール済み
 - 仮想環境上で[Ubuntu desktop 20.04](http://cdimage.ubuntulinux.jp/releases/20.04.1/)インストール済み
-- zabbixサーバーの設定ファイル[zabbix_server.conf](https://www.zabbix.com/documentation/1.8/jp/manual/processes/zabbix_server)やapache.confを取得済み
+- Ubuntuが最新の状態(Ubuntu 20.04.4)でパッケージリストが最新
+- zabbixサーバーの設定ファイル[zabbix_server.conf](https://www.zabbix.com/documentation/1.8/jp/manual/processes/zabbix_server)やapache.confを用意済み
+
+<br>
 
 ### zabbix_server.conf
-
 ```
 LogFile=/var/log/zabbix/zabbix_server.log
 LogFileSize=0
@@ -65,11 +69,9 @@ FpingLocation=/usr/bin/fping
 Fping6Location=/usr/bin/fping6
 LogSlowQueries=3000
 StatsAllowedIP=127.0.0.1
-
 ```
 
 ### apache.conf
-
 ```
 # Define /zabbix alias, this is the default
 <IfModule mod_alias.c>
@@ -138,7 +140,6 @@ StatsAllowedIP=127.0.0.1
         Deny from all
     </files>
 </Directory>
-
 ```
 
 <br>
@@ -153,6 +154,13 @@ StatsAllowedIP=127.0.0.1
 
 <br>
 
+<a id="important"></a>
+
+## 注意点
+2022年5月時点では[Ubuntu22.04でzabbixサーバーを構築](https://www.zabbix.com/download?zabbix=6.0&os_distribution=ubuntu&os_version=22.04_jammy&db=&ws=)することが出来ないためUbuntu 20.04を使用しています。
+
+playbookを実行する前にパッケージリストを最新の状態にしていないとpipをインストールする際にエラーが発生することがあります。
+
 <a id="build"></a>
 
 ## 構築
@@ -160,7 +168,6 @@ StatsAllowedIP=127.0.0.1
 <a id="install-ansible"></a>
 
 ### 1. ansibleをインストール
-
 ```
 sudo apt install -y ansible
 ```
@@ -170,7 +177,6 @@ sudo apt install -y ansible
 ### 2. ansible用にファイルを用意
 
 #### /etc/ansibleにzabbix-install.ymlを用意
-
 ```
 - hosts: localhost
   become: yes
@@ -259,24 +265,25 @@ sudo apt install -y ansible
 ```
 
 ### 3. zabbixをインストールするplaybook実行
-
 ```
 ansible-playbook zabbix-install.yml
 ```
 
 <a id="setting"></a>
 
-### 4. WEBでzabbixの初期設定を実施
+### 4. WEBインターフェースによるzabbixインストール
+localhost/zabbixにアクセスし、[公式ドキュメント](https://www.zabbix.com/documentation/current/en/manual/installation/frontend)を参考にインストールします。
 
+Configure DB connectionの画面はポート番号とパスワードを入力することでDBに接続できます。
+- Database port: 5432
+- Password: hogehoge
 
-
+[![Image from Gyazo](https://i.gyazo.com/dbddff5773451a35bab3eb891c92bbdd.png)](https://gyazo.com/dbddff5773451a35bab3eb891c92bbdd)
 
 <a id="configure-playbook"></a>
 
 ### 5. zabbixを設定するplaybookを実行
-
 /etc/ansibleにconfigure-zabbix.ymlを用意
-
 ```
 - hosts: localhost
   become: yes
@@ -305,18 +312,15 @@ ansible-playbook zabbix-install.yml
 
 ### 6. 動作確認
 
+WEB画面でExampleHostsが作成されていることを確認します。
 
-
-<a id="important"></a>
-
-## 注意点
-playbookを実行する前にパッケージをサーバーを最新の状態にしていないとpipをインストールする際にエラーが発生することがあります。
+[![Image from Gyazo](https://i.gyazo.com/1582663304fa44f3605fcd4792af1938.png)](https://i.gyazo.com/1582663304fa44f3605fcd4792af1938.png)
 
 <a id="improvement"></a>
 
 ## 改善点
-現状のコードだと冪等性が無いため[特定の条件(DBが既にある等)による処理のスキップ](https://docs.ansible.com/ansible/2.9_ja/user_guide/playbooks_conditionals.html#when)や[OS・バージョンによる分岐](https://docs.ansible.com/ansible/2.9_ja/user_guide/playbooks_conditionals.html#id8)等を作る必要があります。
+現状では冪等性があまり無いため[特定の条件(DBが既にある等)による処理のスキップ](https://docs.ansible.com/ansible/2.9_ja/user_guide/playbooks_conditionals.html#when)や[OS・バージョンによる分岐](https://docs.ansible.com/ansible/2.9_ja/user_guide/playbooks_conditionals.html#id8)等を設定し、冪等性があるようにする必要があります。
 
-zabbixの初期設定をWEB上で実施していますが、この設定を自動化する方法があると、ホストの作成までを1つのplaybookで実行できるようになります。
+[WEBインターフェースによるzabbixをインストール](#setting)していますが、このインストールを自動化する方法があると、ホストの作成までを1つのplaybookで実行できるようになります。
 
-今回はパスワードを平文で設定していますが、[暗号化](https://docs.ansible.com/ansible/2.9_ja/user_guide/vault.html)することを検討する必要があります。
+今回はパスワードを平文で設定していますが、[暗号化する](https://docs.ansible.com/ansible/2.9_ja/user_guide/vault.html)等の対策を考える必要があります。
