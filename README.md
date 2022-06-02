@@ -277,6 +277,8 @@ StatsAllowedIP=127.0.0.1
 </Directory>
 ```
 
+<a id="build-playbook"></a>
+
 ### 3. Zabbixをインストールするplaybook実行
 ```
 ansible-playbook zabbix-install.yml
