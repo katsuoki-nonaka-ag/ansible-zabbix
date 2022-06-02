@@ -1,42 +1,43 @@
-# ansibleによるzabbixサーバー構築の自動化
+# Ansibleによるzabbixサーバー構築の自動化
 
-初めまして、AGESTでエンジニアをしているのなかです。
+初めまして、インフラソリューション部の"のなか"です。
 <br>
-今回はansibleという自動化ツールによるzabbixサーバーの構築についての話になります。
+今回はAnsibleという自動化ツールによるzabbixサーバーの構築についての話になります。
 <br>
 ansibleを使えると10分程度でzabbixサーバーを構築できるようになります。
 <br>
-それではansibleを使えるようになるために**ansibleとは何か**や**どうやって使うのか**について説明していきます。
+それではAnsibleを使えるようになるために**Ansibleとは何か**や**どうやって使うのか**について説明していきます。
 
 <br>
 
-- [ansibleとは](#ansible)
+- [Ansibleとは](#ansible)
 - [開発環境](#environment)
 - [注意点](#important)
 - [前提条件](#prerequisite)
 - [構築](#build)
-  1. [ansibleをインストール](#install-ansible)
-  2. [ansible用にファイルを用意](#set-conf-ansible)
+  1. [Ansibleをインストール](#install-ansible)
+  2. [Ansible用にファイルを用意](#set-conf-ansible)
   3. [zabbixをインストールするplaybook実行](#build-playbook)
   4. [WEBでzabbixの初期設定を実施](#setting)
   5. [zabbixを設定するplaybookを実行](#configure-playbook)
   6. [動作確認](#check)
 - [改善点](#improvement)
+- [所感](#impression)
 
 <a id="ansible"></a>
 
-## ansibleとは
-[ansibleの公式ドキュメント](https://docs.ansible.com/ansible/2.9_ja/index.html)では次のように説明されています。
+## Ansibleとは
+[Ansibleの公式ドキュメント](https://docs.ansible.com/ansible/2.9_ja/index.html)では次のように説明されています。
 > Ansible は IT 自動化ツールです。 このツールを使用すると、
 > システムの構成、ソフトウェアの展開、
 > より高度なITタスク (継続的なデプロイメントやダウンタイムなしのローリング更新など) 
 > のオーケストレーションが可能になります。
 
-簡単に説明するとansibleはサーバーやルーターの構築・管理・設定を自動化することを目的として使用されます。
+簡単に説明するとAnsibleはサーバーやルーターの構築・管理・設定を自動化することを目的として使用されます。
 <br>
 例えば今回のzabbixサーバー構築では[公式サイトの手順](https://www.zabbix.com/download?zabbix=6.0&os_distribution=ubuntu&os_version=20.04_focal&db=postgresql&ws=apache)を全て自動化しています。
 <br>
-さらにansibleは[様々なモジュール](https://docs.ansible.com/ansible/2.9_ja/modules/list_of_all_modules.html)が利用可能なため、DBの作成やzabbixのホスト作成等の様々な設定を自動化できます。
+さらにAnsibleは[様々なモジュール](https://docs.ansible.com/ansible/2.9_ja/modules/list_of_all_modules.html)が利用可能なため、DBの作成やzabbixのホスト作成等の様々な設定を自動化できます。
 
 <br>
 
@@ -46,7 +47,7 @@ ansibleを使えると10分程度でzabbixサーバーを構築できるよう�
 - (ホストOS) windows 10
 - (ゲストOS) Ubuntu desktop 20.04.4
 - virtualbox 6.1
-- ansible 2.9.6
+- Ansible 2.9.6
 
 <a id="prerequisite"></a>
 
@@ -72,18 +73,18 @@ ansibleを使えると10分程度でzabbixサーバーを構築できるよう�
 <a id="build"></a>
 
 ## 構築
-ansibleを使用して自動化するには[playbook](https://docs.ansible.com/ansible/2.9_ja/user_guide/playbooks.html)を作成する必要があります。
+Ansibleを使用して自動化するには[playbook](https://docs.ansible.com/ansible/2.9_ja/user_guide/playbooks.html)を作成する必要があります。
 
 <a id="install-ansible"></a>
 
-### 1. ansibleをインストール
+### 1. Ansibleをインストール
 ```
 sudo apt install -y ansible
 ```
 
 <a id="set-conf-ansible"></a>
 
-### 2. ansible用にファイルを配置
+### 2. Ansible用にファイルを配置
 
 #### /etc/ansibleにzabbix-install.ymlを配置
 ```
@@ -334,5 +335,11 @@ WEB画面でExampleHostsが作成されていることを確認します。
 ## 改善点
 現状では最小構成かつ冪等性があまり無いため[ロール](https://docs.ansible.com/ansible/2.9_ja/user_guide/playbooks_reuse_roles.html)や[特定の条件(DBが既にある等)における処理](https://docs.ansible.com/ansible/2.9_ja/user_guide/playbooks_conditionals.html#when)や[OS・バージョンによる分岐](https://docs.ansible.com/ansible/2.9_ja/user_guide/playbooks_conditionals.html#id8)等を設定することで、冪等性がかなりある状態になり複雑なサーバーの構築や設定も出来るようになります。
 <br>
-サーバーにansible等の不要なパッケージをインストールしたくない場合は、構築するサーバー側のSSHや[hosts](https://docs.ansible.com/ansible/2.9_ja/user_guide/playbooks_intro.html#playbook-hosts-and-users)を設定することでホストOSや別のサーバーからansibleを実行できます。
+サーバーにAnsible等の不要なパッケージをインストールしたくない場合は、構築するサーバー側のSSHや[hosts](https://docs.ansible.com/ansible/2.9_ja/user_guide/playbooks_intro.html#playbook-hosts-and-users)を設定することでホストOSや別のサーバーからAnsibleを実行できます。
 
+<br>
+
+<a id="impression"></a>
+
+## 所感
+今回
