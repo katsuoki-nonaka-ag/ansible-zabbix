@@ -336,7 +336,7 @@ WEB画面でExampleHostsが作成されていることを確認します。
 <a id="improvement"></a>
 
 ## 改善点
-現状では最小構成かつ冪等性があまり無いため[ロール](https://docs.ansible.com/ansible/2.9_ja/user_guide/playbooks_reuse_roles.html)や[特定の条件(DBが既にある等)における処理](https://docs.ansible.com/ansible/2.9_ja/user_guide/playbooks_conditionals.html#when)や[OS・バージョンによる分岐](https://docs.ansible.com/ansible/2.9_ja/user_guide/playbooks_conditionals.html#id8)等を設定することで、冪等性がかなりある状態になり複雑なサーバーの構築や設定も出来るようになります。
+現状では最小構成かつ冪等性があまり無いため[ロール](https://docs.ansible.com/ansible/2.9_ja/user_guide/playbooks_reuse_roles.html)や[特定の条件(DBが既にある等)における処理](https://docs.ansible.com/ansible/2.9_ja/user_guide/playbooks_conditionals.html#when)や[OS・バージョンによる分岐](https://docs.ansible.com/ansible/2.9_ja/user_guide/playbooks_conditionals.html#id8)等を設定することで、冪等性がある状態になり複雑なサーバーの構築や設定もできるようになります。
 <br>
 サーバーにAnsible等の不要なパッケージをインストールしたくない場合は、構築するサーバー側のSSHや[hosts](https://docs.ansible.com/ansible/2.9_ja/user_guide/playbooks_intro.html#playbook-hosts-and-users)を設定することでホストOSや別のサーバーからAnsibleを実行できます。
 
@@ -347,7 +347,7 @@ WEB画面でExampleHostsが作成されていることを確認します。
 ## 所感
 今回Ansibleで構築するにあたり主に２点難しいと感じました。
 
-まず１点目はサーバーの設定ファイルの用意です。本記事のZabbixサーバーの設定ファイルは、一度Zabbixサーバーを構築し、デフォルトの設定ファイルを元に作成しました。今後Zabbixのバージョンによって設定のデフォルト値が変更されたり設定項目が追加されると、その度に設定ファイルを用意する必要があります。
+まず１点目はサーバーの設定ファイルの用意です。本記事のZabbixサーバーの設定ファイルは、一度Zabbixサーバーを構築し、デフォルトの設定ファイルを元に作成しました。コードで設定ファイルを用意できれば、手間が少なくなり冪等性がある設定にできます。
 
 次に２点目はAnsibleで自動化する時の処理の順番です。
 パッケージのインストールの順番を変更したりまとめると動かなくなる部分が多々あります。今回はなるべくサーバーの構築を自動化したかったためplaybookが長くなりましたが、pythonのインストールを手動で実施したり、パッケージのインストールだけでも別で作成する等の工夫でもう少しシンプルにできます。
