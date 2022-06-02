@@ -1,15 +1,16 @@
-# Ansibleによるzabbixサーバー構築の自動化
+# AnsibleによるZabbixサーバー構築の自動化
 
 初めまして、インフラソリューション部の"のなか"です。
 <br>
-今回はAnsibleという自動化ツールによるzabbixサーバーの構築についての話になります。
+今回はAnsibleという自動化ツールによるZabbixサーバーの構築についての話になります。
 <br>
-ansibleを使えると10分程度でzabbixサーバーを構築できるようになります。
+Ansibleを使えると10分程度でZabbixサーバーを構築できるようになります。
 <br>
 それではAnsibleを使えるようになるために**Ansibleとは何か**や**どうやって使うのか**について説明していきます。
 
 <br>
 
+## 目次
 - [Ansibleとは](#ansible)
 - [開発環境](#environment)
 - [注意点](#important)
@@ -17,9 +18,9 @@ ansibleを使えると10分程度でzabbixサーバーを構築できるよう�
 - [構築](#build)
   1. [Ansibleをインストール](#install-ansible)
   2. [Ansible用にファイルを用意](#set-conf-ansible)
-  3. [zabbixをインストールするplaybook実行](#build-playbook)
-  4. [WEBでzabbixの初期設定を実施](#setting)
-  5. [zabbixを設定するplaybookを実行](#configure-playbook)
+  3. [Zabbixをインストールするplaybook実行](#build-playbook)
+  4. [WEBでZabbixの初期設定を実施](#setting)
+  5. [Zabbixを設定するplaybookを実行](#configure-playbook)
   6. [動作確認](#check)
 - [改善点](#improvement)
 - [所感](#impression)
@@ -35,9 +36,9 @@ ansibleを使えると10分程度でzabbixサーバーを構築できるよう�
 
 簡単に説明するとAnsibleはサーバーやルーターの構築・管理・設定を自動化することを目的として使用されます。
 <br>
-例えば今回のzabbixサーバー構築では[公式サイトの手順](https://www.zabbix.com/download?zabbix=6.0&os_distribution=ubuntu&os_version=20.04_focal&db=postgresql&ws=apache)を全て自動化しています。
+例えば今回のZabbixサーバー構築では[公式サイトの手順](https://www.zabbix.com/download?zabbix=6.0&os_distribution=ubuntu&os_version=20.04_focal&db=postgresql&ws=apache)を全て自動化しています。
 <br>
-さらにAnsibleは[様々なモジュール](https://docs.ansible.com/ansible/2.9_ja/modules/list_of_all_modules.html)が利用可能なため、DBの作成やzabbixのホスト作成等の様々な設定を自動化できます。
+さらにAnsibleは[様々なモジュール](https://docs.ansible.com/ansible/2.9_ja/modules/list_of_all_modules.html)が利用可能なため、DBの作成やZabbixのホスト作成等の様々な設定を自動化できます。
 
 <br>
 
@@ -49,24 +50,24 @@ ansibleを使えると10分程度でzabbixサーバーを構築できるよう�
 - virtualbox 6.1
 - Ansible 2.9.6
 
-<a id="prerequisite"></a>
-
-<br>
-
-## 前提条件
-- [virtualbox](https://www.virtualbox.org/wiki/Downloads)インストール済み
-- 仮想環境上で[Ubuntu desktop 20.04](http://cdimage.ubuntulinux.jp/releases/20.04.1/)がインストール済み
-- Ubuntuが20.04の最新版(Ubuntu 20.04.4)でパッケージリストが最新の状態
-- zabbixサーバーの設定ファイル[zabbix_server.conf](https://www.zabbix.com/documentation/1.8/jp/manual/processes/zabbix_server)やapache.confを用意済み
-
 <br>
 
 <a id="important"></a>
 
 ## 注意点
-2022年5月時点では[Ubuntu22.04でzabbixサーバーを構築](https://www.zabbix.com/download?zabbix=6.0&os_distribution=ubuntu&os_version=22.04_jammy&db=&ws=)することが出来ないためUbuntu 20.04を使用しています。
+2022年5月時点では[Ubuntu22.04でZabbixサーバーを構築](https://www.zabbix.com/download?zabbix=6.0&os_distribution=ubuntu&os_version=22.04_jammy&db=&ws=)することが出来ないためUbuntu 20.04を使用しています。
 <br>
 今回はパスワードを平文で設定していますが、実際にサーバーを構築する際は[暗号化する](https://docs.ansible.com/ansible/2.9_ja/user_guide/vault.html)等の対策をする必要があります。
+
+<br>
+
+<a id="prerequisite"></a>
+
+## 前提条件
+- [virtualbox](https://www.virtualbox.org/wiki/Downloads)インストール済み
+- 仮想環境上で[Ubuntu desktop 20.04](http://cdimage.ubuntulinux.jp/releases/20.04.1/)がインストール済み
+- Ubuntuが20.04の最新版(Ubuntu 20.04.4)でパッケージリストが最新の状態
+- Zabbixサーバーの設定ファイル[zabbix_server.conf](https://www.zabbix.com/documentation/1.8/jp/manual/processes/zabbix_server)やapache.confを用意済み
 
 <br>
 
@@ -276,14 +277,14 @@ StatsAllowedIP=127.0.0.1
 </Directory>
 ```
 
-### 3. zabbixをインストールするplaybook実行
+### 3. Zabbixをインストールするplaybook実行
 ```
 ansible-playbook zabbix-install.yml
 ```
 
 <a id="setting"></a>
 
-### 4. WEBインターフェースによるzabbixインストール
+### 4. WEBインターフェースによるZabbixインストール
 localhost/zabbixにアクセスし、[公式ドキュメント](https://www.zabbix.com/documentation/current/en/manual/installation/frontend)を参考にインストールします。
 <br>
 Configure DB connectionの画面はポート番号とパスワードを入力することでDBに接続できます。
@@ -294,7 +295,7 @@ Configure DB connectionの画面はポート番号とパスワードを入力す
 
 <a id="configure-playbook"></a>
 
-### 5. zabbixを設定するplaybookを実行
+### 5. Zabbixを設定するplaybookを実行
 #### /etc/ansibleにconfigure-zabbix.ymlを配置
 ```
 - hosts: localhost
@@ -342,4 +343,4 @@ WEB画面でExampleHostsが作成されていることを確認します。
 <a id="impression"></a>
 
 ## 所感
-今回
+今回Ansibleで構築するにあたりサーバーの設定ファイルを用意することが難しいと感じました。本記事で用意しているZabbixサーバーの設定ファイルは
