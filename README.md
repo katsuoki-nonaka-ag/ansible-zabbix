@@ -58,6 +58,8 @@ Ansibleを使えると10分程度でZabbixサーバーを構築できるよう�
 2022年5月時点では[Ubuntu22.04でZabbixサーバーを構築](https://www.zabbix.com/download?zabbix=6.0&os_distribution=ubuntu&os_version=22.04_jammy&db=&ws=)することが出来ないためUbuntu 20.04を使用しています。
 <br>
 今回はパスワードを平文で設定していますが、実際にサーバーを構築する際は[暗号化する](https://docs.ansible.com/ansible/2.9_ja/user_guide/vault.html)等の対策をする必要があります。
+<br>
+<strong>※本記事では検証目的とした手順であり、実際に利用ではMWバージョンや環境によって手順が異なる場合があります。</strong>
 
 <br>
 

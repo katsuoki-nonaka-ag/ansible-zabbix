@@ -27,28 +27,56 @@
     - name: install package  
       apt:
         name:
-          - zabbix-server-pgsql
+          #- zabbix-server-pgsql
+          - zabbix-server-mysql
           - zabbix-frontend-php
-          - php7.4-pgsql
+          - mysql-server
+          #- php7.4-pgsql
           - zabbix-apache-conf
           - zabbix-sql-scripts
           - zabbix-agent
-          - postgresql
+          #- postgresql
 
     - name: install zabbix-api
       shell: pip install zabbix-api
 
-    - name: create db
-      become_user: postgres
-      postgresql_db:
-        name: zabbix
+    # - name: create db
+    #   become_user: postgres
+    #   postgresql_db:
+    #     name: zabbix
 
-    - name: create user zabbix
-      become_user: postgres
-      postgresql_user:
-        db: zabbix
-        name: zabbix
-        password: hogehoge
+    # - name: create user zabbix
+    #   become_user: postgres
+    #   postgresql_user:
+    #     db: zabbix
+    #     name: zabbix
+    #     password: hogehoge
+
+    - name: rootユーザのパスワード設定
+      mysql_user:
+        login_user: "zabbix"
+        login_password: "hogehoge"
+        name: "zabbix"
+        password: "hogehoge"
+        check_implicit_admin: yes
+        state: present
+
+    - name: DB作成
+      mysql_db:
+        login_user: "zabbix"
+        login_password: "hogehoge"
+        name: "zabbix"
+        state: present
+        encoding: utf8mb4
+
+    - name: ユーザ追加
+      mysql_user:
+        login_user: "zabbix"
+        login_password: "hogehoge"
+        name: "zabbix"
+        password: "hogehoge"
+        priv: 'zabbix.*:ALL'
+        state: present
 
     - name: configure db
       shell: zcat /usr/share/doc/zabbix-sql-scripts/postgresql/server.sql.gz | sudo -u zabbix psql zabbix
@@ -64,6 +92,12 @@
 
     - name: copy apache conf
       shell: cp -p /etc/ansible/apache.conf /etc/zabbix/apache.conf
+
+    - name: mysqlサービス再起動
+      service:
+        name: mysql
+        enabled: yes
+        state: restarted
 
     - name: restart zabbix server
       service: 
