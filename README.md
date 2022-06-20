@@ -190,7 +190,7 @@ DBName=zabbix
 DBUser=zabbix
 
 # DBPasswordを追加
-DBPassword=hogehoge
+DBPassword=zabbix
 
 SNMPTrapperFile=/var/log/snmptrap/snmptrap.log
 
@@ -291,7 +291,7 @@ localhost/zabbixにアクセスし、[公式ドキュメント](https://www.zabb
 <br>
 Configure DB connectionの画面はポート番号とパスワードを入力することでDBに接続できます。
 - Database port: 5432
-- Password: hogehoge
+- Password: zabbix
 
 [![Image from Gyazo](https://i.gyazo.com/dbddff5773451a35bab3eb891c92bbdd.png)](https://gyazo.com/dbddff5773451a35bab3eb891c92bbdd)
 
